@@ -26,27 +26,20 @@ int main()
     while(window.isOpen())
     {
         sf::Event event;
-        while(window.pollEvent(event))
-        {
-            switch(event.type)
-            {
-            case sf::Event::Closed:
-                window.close();
-                break;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) window.close();
 
-            case sf::Event::KeyPressed:
-                if(event.key.code == sf::Keyboard::Escape)
-                    window.close();
-
-            case sf::Event::MouseButtonPressed:
+            if(event.type == sf::Event::MouseButtonPressed){
                 if(event.mouseButton.button == sf::Mouse::Left){
                     sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
                     sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);
                     std::cout << worldPos.x << " " << worldPos.y << std:: endl;
                 }
             }
+            if (event.type == sf::Event::KeyPressed){
+                if (event.key.code == sf::Keyboard::Escape) window.close();
+            }
         }
-
 
 
         if(scene == 0){
