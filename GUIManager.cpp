@@ -1,5 +1,4 @@
 #include "GUIManager.h"
-#include <iostream>
 
 GUIManager::GUIManager(sf::Vector2f resolution, int characterSize, int textPosition){
     font.loadFromFile("fonts/font.ttf");
@@ -222,9 +221,6 @@ int GUIManager::checkLMB(sf::RenderWindow &window){
             mouseButtonReleased = true;
         }
     }
-
-    std::cout << resolution.x << resolution.y << std::endl;
-
     return 100;
 }
 

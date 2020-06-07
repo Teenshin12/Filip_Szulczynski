@@ -5,6 +5,7 @@ CONFIG -= qt
 
 SOURCES += \
     GUIManager.cpp \
+    MapLoader.cpp \
         main.cpp \
 
 INCLUDEPATH += "C:/SFML-2.5.1/include"
@@ -17,4 +18,5 @@ CONFIG(debug, debug|release){
 }
 
 HEADERS += \ \
-    GUIManager.h
+    GUIManager.h \
+    MapLoader.h
