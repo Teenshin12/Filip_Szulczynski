@@ -16,14 +16,14 @@ int characterSize;
 int textPosition;
 int scene = 0;
 bool mouseButtonReleased = true;
-bool windowFullscreen = false;
+bool fullscreen = false;
 
 
 // COLORS //
 sf::Color unTouched;
 sf::Color Touched;
 public:
-    GUIManager(sf::Vector2f resolution, int characterSize, int textPosition);
+    GUIManager(sf::Vector2f resolution, int characterSize, int textPosition, bool fullscreen);
     void setMenu();
     void setSettings();
     int checkLMB(sf::RenderWindow &window);

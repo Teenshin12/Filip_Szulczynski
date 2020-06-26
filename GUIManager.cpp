@@ -1,13 +1,14 @@
 #include "GUIManager.h"
 
-GUIManager::GUIManager(sf::Vector2f resolution, int characterSize, int textPosition){
-    font.loadFromFile("fonts/font.ttf");
+GUIManager::GUIManager(sf::Vector2f resolution, int characterSize, int textPosition, bool fullscreen){
+    font.loadFromFile("fonts/dungeon.ttf");
     this->resolution = resolution;
     this->characterSize = characterSize;
     this->textPosition = textPosition;
+    this->fullscreen = fullscreen;
 
-    unTouched = {255,255,255};
-    Touched = {0,0,102};
+    unTouched = {110,0,10};
+    Touched = {200,0,20};
 }
 
 void GUIManager::setMenu(){
@@ -15,7 +16,6 @@ void GUIManager::setMenu(){
     texts.clear();
 
     sf::Text play;
-    font.loadFromFile("fonts/font.ttf");
     play.setFont(font);
     play.setCharacterSize(characterSize);
     play.setString("PLAY");
@@ -53,7 +53,6 @@ void GUIManager::setSettings(){
     texts.clear();
 
     sf::Text resolutions;
-    font.loadFromFile("fonts/font.ttf");
     resolutions.setFont(font);
     resolutions.setCharacterSize(characterSize / 2);
     resolutions.setString("RESOLUTIONS");
@@ -66,7 +65,7 @@ void GUIManager::setSettings(){
     sf::Text firstRes;
     firstRes.setFont(font);
     firstRes.setCharacterSize(characterSize / 2);
-    firstRes.setString("800 x 600");
+    firstRes.setString("1280 x 720");
     firstRes.setFillColor(unTouched);
     textRect = firstRes.getLocalBounds();
     firstRes.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
@@ -96,7 +95,7 @@ void GUIManager::setSettings(){
     sf::Text setFullScreen;
     setFullScreen.setFont(font);
     setFullScreen.setCharacterSize(characterSize / 2);
-    if(windowFullscreen == true)setFullScreen.setString("FULLSCREEN - ON");
+    if(fullscreen == true)setFullScreen.setString("FULLSCREEN - ON");
     else setFullScreen.setString("FULLSCREEN - OFF");
     setFullScreen.setFillColor(unTouched);
     textRect = setFullScreen.getLocalBounds();
@@ -163,7 +162,7 @@ int GUIManager::checkLMB(sf::RenderWindow &window){
             if(worldPos.y > texts[1].getPosition().y - (characterSize/4 - 5) && worldPos.y < texts[1].getPosition().y + (characterSize/4 - 5)){
                 texts[1].setFillColor(Touched);
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
-                    resToSet = {800,600};
+                    resToSet = {1280,720};
                     mouseButtonReleased = false;
                     return 3;
                 }
@@ -188,8 +187,8 @@ int GUIManager::checkLMB(sf::RenderWindow &window){
                 texts[4].setFillColor(Touched);
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
                     mouseButtonReleased = false;
-                    windowFullscreen = not windowFullscreen;
-                    if(windowFullscreen == true)texts[4].setString("FULLSCREEN - ON");
+                    fullscreen = not fullscreen;
+                    if(fullscreen == true)texts[4].setString("FULLSCREEN - ON");
                     else texts[4].setString("FULLSCREEN - OFF");
                     return 6;
                 }
