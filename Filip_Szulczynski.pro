@@ -6,7 +6,10 @@ CONFIG -= qt
 SOURCES += \
     Animation.cpp \
     GUIManager.cpp \
+    GameObjects.cpp \
     MapLoader.cpp \
+    PlayerCharacter.cpp \
+    Skeleton.cpp \
         main.cpp \
 
 INCLUDEPATH += "D:/SFML-2.5.1/include"
@@ -21,4 +24,7 @@ CONFIG(debug, debug|release){
 HEADERS += \ \
     Animation.h \
     GUIManager.h \
-    MapLoader.h
+    GameObjects.h \
+    MapLoader.h \
+    PlayerCharacter.h \
+    Skeleton.h

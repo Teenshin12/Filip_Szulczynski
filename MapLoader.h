@@ -15,6 +15,7 @@ public:
     MapLoader();
     void loadLayers(std::string mapNumber);
     void draw(sf::RenderWindow &window);
+    std::vector <sf::Sprite> showLayer(int number);
 };
 
 #endif // MAPLOADER_H

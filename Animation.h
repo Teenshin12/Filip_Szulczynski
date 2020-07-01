@@ -3,10 +3,9 @@
 
 #include <sfml\Graphics.hpp>
 
-class Animation
-{
+class Animation{
 public:
-    Animation(sf::Texture* texture, sf::Vector2u ImageCount, float frameTime);
+    Animation(sf::Texture* texture = 0, sf::Vector2u ImageCount = {0,0}, float frameTime = 0);
 
     sf::IntRect uvRect;
 

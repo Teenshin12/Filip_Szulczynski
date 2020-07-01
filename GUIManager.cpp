@@ -153,7 +153,7 @@ int GUIManager::checkLMB(sf::RenderWindow &window){
                 }
             }
             else {
-                for(int i = 0; i < (int)texts.size(); i++){
+                for(size_t i = 0; i < texts.size(); i++){
                      texts[i].setFillColor(unTouched);
                 }
             }
@@ -209,7 +209,7 @@ int GUIManager::checkLMB(sf::RenderWindow &window){
                 }
             }
             else{
-                for(int i = 0; i < (int)texts.size(); i++){
+                for(size_t i = 0; i < texts.size(); i++){
                      texts[i].setFillColor(unTouched);
                 }
             }
@@ -224,7 +224,7 @@ int GUIManager::checkLMB(sf::RenderWindow &window){
 }
 
 void GUIManager::draw(sf::RenderWindow &window){
-    for(int i = 0; i < (int)texts.size(); i++){
+    for(size_t i = 0; i < texts.size(); i++){
         window.draw(texts[i]);
     }
 }

@@ -5,78 +5,105 @@
 #include "GUIManager.h"
 #include "MapLoader.h"
 
-#include "Animation.h"
+#include "PlayerCharacter.h"
+#include "Skeleton.h"
+#include "GameObjects.h"
 
 
 int main() {
+    srand( time( NULL ) );
     // variables to set
-    sf::Vector2f resolution = {2560,1440};
-    sf::Vector2f playerPosition = {16.f, 16.f * 5.f};
-    sf::Vector2f cameraOffset = {0, 0};
-    int cameraMoveStep = 5;
-    int cameraMoveDelay = 10;
-    int cameraMaxPosition = 100;
-    bool fullscreen = true;
-    int characterSize = 100;
-    int textPosition = 50;
-    float playerSpeed = 2;
+    sf::Vector2f resolution = {2560,1440}; //ustawienia rozdzielczosci
+    sf::Vector2f cameraOffset = {0, 0}; //zmiana pozycji kamery
+    int cameraMoveStep = 5; //krok ruchu kamery
+    int cameraMoveDelay = 10; //czas pomiedzy krokami kamery
+    int cameraMaxPosition = 100; //maksymalne wychylenie kamery
+    bool fullscreen = true; // czy pelny ekran?
+    int characterSize = 100; //rozmiar tekstu
+    int textPosition = 50; //poczatkowa pozycja tekstu
+    float playerSpeed = 6; //predkosc gracza
+    int numberOfSkeletons = 100;
+    MapLoader maploader;
+    int levelCounter = 0;
+    bool loaded = false;
 
+    //Ustawienia rzutow
     sf::View view1(sf::Vector2f(0, 0), sf::Vector2f(resolution.x, resolution.y));
     view1.setViewport(sf::FloatRect(0.f, -0.195f, 1.f, 1.f));
     view1.zoom(0.31);
     sf::View view2(sf::Vector2f(0, 0), sf::Vector2f(3400, 750));
     view2.setViewport(sf::FloatRect( -0.07, 0.858, 0.75, 0.15));
 
+    //Ladowanie tekstury tla
     sf::Texture backgroundTexture;
     backgroundTexture.loadFromFile("background.png");
+    //Tworzenie sprite'a tla
     sf::Sprite background;
     background.setTexture(backgroundTexture);
-
     background.setScale(resolution.x/backgroundTexture.getSize().x, resolution.y/backgroundTexture.getSize().y);
 
+    //texktura nakladki na gre
     sf::Texture overlayImage;
     overlayImage.loadFromFile("overlay.png");
+    //sprite nakladki
     sf::Sprite overlay;
     overlay.setTexture(overlayImage);
-
     overlay.setScale(resolution.x/overlayImage.getSize().x, resolution.y/overlayImage.getSize().y);
 
-    sf::CircleShape playerDot;
-    playerDot.setRadius(20);
-    playerDot.setOrigin(10,10);
-    playerDot.setFillColor(sf::Color::Green);
+    //Ladowanie mapy
+    if(loaded == false){
+        maploader.loadLayers("maps/1.txt"); //1600x320 rozmiar mapy w pikselach
+        levelCounter = 1;
+    }
 
-    sf::Texture playerTexture;
-    playerTexture.loadFromFile("player.png");
-    sf::Sprite playerSprite;
-    playerSprite.setTexture(playerTexture);
+    //Nastepny poziom
+    sf::CircleShape nextLevel;
+    nextLevel.setRadius(10);
+    nextLevel.setOrigin(10,10);
+    nextLevel.setPosition(1550,150);
+    nextLevel.setFillColor(sf::Color::Cyan);
 
-    Animation playerAnimation(&playerTexture, sf::Vector2u(4,6), 0.3f);
+    //vector obiektow typu gameObject
+    std::vector<std::unique_ptr<GameObjects>> GO;
 
-    //creating window
+    //Dodanie gracza na pierwsza pozycje vectora
+    GO.emplace_back(std::make_unique<PlayerCharacter>());
+    //Tworzenie wskaznika na gracza
+    PlayerCharacter *player = dynamic_cast<PlayerCharacter *>(GO[0].get());
+
+    //Dodanie "numberOfSkeletons" szkieletow
+    for(int i = 0; i < numberOfSkeletons; i++){
+        float rand1 =( std::rand() % 10 ) + 10;
+        float rand2 =( std::rand() % 1334 ) + 116;
+        float rand3 =( std::rand() % 304 ) + 16;
+        GO.emplace_back(std::make_unique<Skeleton>(rand1, sf::Vector2f(rand2,rand3)));
+    }
+    player->loadWalls(maploader.showLayer(0));
+
+
+    //tworzenie okna
     sf::RenderWindow window(sf::VideoMode(resolution.x, resolution.y), "SFML works!");
     if(fullscreen)window.create(sf::VideoMode(resolution.x, resolution.y), "THE GAME", sf::Style::Fullscreen);
     else window.create(sf::VideoMode(resolution.x, resolution.y), "THE GAME");
     window.setFramerateLimit(60);
 
-    //actual scene (menu, game etc.)
+    //aktualna scena (menu, gra (odpowiednia cyfra))
     int scene = 0;
 
-    //creating GUIManager
+    //tworzenie GUIManager
     GUIManager GUIM(resolution, characterSize, textPosition, fullscreen);
     bool loadMenu = true;
     bool loadSettings = false;
 
-    // creating map variable etc.
-    MapLoader maploader;
-    int levelCounter = 1;
 
     // clocks
-    sf::Clock deltaTimeClock; //deltaTime Offset
-    float deltaTime = 0.0f; // Delta time describes the time difference between the previous frame that was drawn and the current frame.
+    sf::Clock deltaTimeClock;
+    float deltaTime = 0.0f; // deltaTime - czas pomiedzy poszczegolnymi klatkami w grze
+
     sf::Clock cameraStepDelayClock;
     float cameraStepDelay = 0.0f;
     cameraStepDelay = cameraStepDelayClock.restart().asMilliseconds();
+
     while(window.isOpen())
     {
         sf::Event event;
@@ -107,7 +134,7 @@ int main() {
             }
         }
 
-
+        //scena 0
         if(scene == 0){
             window.clear();
 
@@ -156,47 +183,34 @@ int main() {
             GUIM.draw(window);
         }
 
+        //scena 1
         if(scene == 1){
-            window.clear();
-            deltaTime = deltaTimeClock.restart().asSeconds(); // restart delta time clock
+            window.clear(); //czyszczenie okna
+            deltaTime = deltaTimeClock.restart().asSeconds(); // restart zegara deltaTime
+            //Sekcja aktualizowania wartosci deltaTime w obiektach gry
+            for(size_t i = 0; i < GO.size(); i++){
+                GameObjects *someGameObject = dynamic_cast<GameObjects *>(GO[i].get());
+                someGameObject->updateDeltaTime(deltaTime);
+            }
             cameraStepDelay = cameraStepDelayClock.getElapsedTime().asMilliseconds();
 
             sf::Vector2f direction = {0, 0};
                  if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::D)) direction = sf::Vector2f(deltaTime *  70 * playerSpeed, -deltaTime *  70 * playerSpeed);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction = sf::Vector2f(-deltaTime *  70 * playerSpeed, -deltaTime *  70 * playerSpeed);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S)) direction = sf::Vector2f(0.f, -deltaTime * 100 * playerSpeed);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::D)) direction = sf::Vector2f(deltaTime *  70 * playerSpeed, deltaTime *  70 * playerSpeed);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction = sf::Vector2f(-deltaTime *  70 * playerSpeed, deltaTime *  70 * playerSpeed);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S)) direction = sf::Vector2f(0.f, -deltaTime * 100 * playerSpeed);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !sf::Keyboard::isKeyPressed(sf::Keyboard::W)) direction = sf::Vector2f(0.f, deltaTime *  100 * playerSpeed);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !sf::Keyboard::isKeyPressed(sf::Keyboard::D)) direction = sf::Vector2f(-deltaTime * 100 * playerSpeed, 0.f);
             else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction = sf::Vector2f(deltaTime *  100 * playerSpeed, 0.f);
 
-            int playerMovement = 0;
-            if(direction.x != 0 || direction.y !=0){
-                bool collisionX = false;
-                bool collisionY = false;
-                playerSprite.move(direction);
-                if(playerSprite.getPosition().x < -1 || playerSprite.getPosition().x > 1589) collisionX = true;
-                if(playerSprite.getPosition().y < -1 || playerSprite.getPosition().y > 19*16+3 ) collisionY = true;
 
-                if(collisionX == false){
-                    if(direction.x < 0) playerMovement = 2;
-                    else if(direction.x > 0) playerMovement = 1;
-                }
-                else playerSprite.move(-direction.x, 0);
-                if(collisionY == false){
-                    if(direction.y > 0) playerMovement = 4;
-                    else if(direction.y < 0) playerMovement = 3;
-                }
-                else playerSprite.move(0, -direction.y);
+            //Sekcja ruchu w obiktach gry
+            for(size_t i = 0; i < GO.size(); i++){
+                GameObjects *someGameObject = dynamic_cast<GameObjects *>(GO[i].get());
+                if(i == 0) someGameObject->move(direction);
+                else someGameObject->move(player->returnPosition());
             }
-            playerPosition = playerSprite.getPosition();
-            playerDot.setPosition(playerPosition.x - 6, playerPosition.y - 7);
-
-
-
-            playerAnimation.Update(playerMovement, deltaTime * 3);
-            playerSprite.setTextureRect(playerAnimation.uvRect);
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && cameraStepDelay > cameraMoveDelay){
                 cameraStepDelay = cameraStepDelayClock.restart().asMilliseconds();
@@ -211,26 +225,35 @@ int main() {
                 else if(cameraOffset.x < 0)cameraOffset.x+=cameraMoveStep;
             }
 
-            view1.setCenter(playerPosition.x + cameraOffset.x, 100);
+            //ladowanie nowych poziomow gdy gracz dojdzie do kranca mapy
+            if(player->returnSprite().getGlobalBounds().intersects(nextLevel.getGlobalBounds())) {levelCounter++; player->setPosition({16,150}); loaded = false; }
+            if(levelCounter == 2 && loaded == false){maploader.loadLayers("maps/2.txt"); player->loadWalls(maploader.showLayer(0)); player->loadWalls(maploader.showLayer(0)); loaded = true; }
+            else if(levelCounter == 3 && loaded == false){maploader.loadLayers("maps/3.txt"); player->loadWalls(maploader.showLayer(0)); player->loadWalls(maploader.showLayer(0)); loaded = true; }
+            else if(levelCounter == 4 && loaded == false){maploader.loadLayers("maps/3.txt"); player->loadWalls(maploader.showLayer(0)); player->loadWalls(maploader.showLayer(0)); loaded = true; }
+            else if(levelCounter == 5 && loaded == false){maploader.loadLayers("maps/3.txt"); player->loadWalls(maploader.showLayer(0)); player->loadWalls(maploader.showLayer(0)); loaded = true; }
+
+            view1.setCenter(player->returnPosition().x + cameraOffset.x, 100);
             window.setView(view1);
             maploader.draw(window);
-            window.draw(playerSprite);
+            window.draw(nextLevel);
+            for(size_t i = 0; i < GO.size(); i++){
+                GameObjects *someGameObject = dynamic_cast<GameObjects *>(GO[i].get());
+                someGameObject->drawGame(window);
+            }
 
             window.setView(view2);
             maploader.draw(window);
-            window.draw(playerDot);
+            window.draw(nextLevel);
+            for(size_t i = 0; i < GO.size(); i++){
+                GameObjects *someGameObject = dynamic_cast<GameObjects *>(GO[i].get());
+                someGameObject->drawMinimap(window);
+            }
 
             window.setView(window.getDefaultView());
             window.draw(overlay);
-
-            if(levelCounter == 1){maploader.loadLayers("maps/1.txt"); levelCounter++;}
-        }
-
-        if(scene == 2){
-
         }
 
     window.display();
-    } //game loop brackets
+    } //nawias petli gry
     return 0;
-} //main brackets
+} //nawias main

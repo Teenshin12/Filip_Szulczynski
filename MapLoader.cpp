@@ -6,27 +6,29 @@ MapLoader::MapLoader(){
 }
 
 void MapLoader::loadLayers(std::string mapNumber){
+    groundLayer.clear();
+    wallLayer.clear();
     std::fstream map;
     map.open (mapNumber, std::ios::in);
-    int map_x, map_y; //size of map
-    int pos_x, pos_y; //position in spritesheet
+    sf::Vector2i mapSize;
+    sf::Vector2i posSpriteSheet;
 
     if( map.good() == true ){
-        map >> map_x; // taking x size of the map
-        map >> map_y; // taking y size of the map
-        for(int i = 0; i < map_x * map_y; i++){
-            map >> pos_x; //x position of texture
-            map >> pos_y; //x position of texture
-            sf::Sprite sprite(spriteSheet, sf::IntRect(17*pos_x, 17*pos_y,16,16)); //17 is a size of texture(16) + space between each texture 1 pixel
-            sprite.setPosition((i % map_x) * 16, (i/map_x) * 16); //  i % map_x is actual row, i/map_x is a actual column
+        map >> mapSize.x; // taking x size of the map
+        map >> mapSize.y; // taking y size of the map
+        for(int i = 0; i < mapSize.x * mapSize.y; i++){
+            map >> posSpriteSheet.x; //x position of texture
+            map >> posSpriteSheet.y; //x position of texture
+            sf::Sprite sprite(spriteSheet, sf::IntRect(17*posSpriteSheet.x, 17*posSpriteSheet.y,16,16)); //17 is a size of texture(16) + space between each texture 1 pixel
+            sprite.setPosition((i % mapSize.x) * 16, (i/mapSize.x) * 16); //  i % map_x is actual row, i/map_x is a actual column
             groundLayer.emplace_back(sprite);
         }
 
-        for(int i = 0; i < map_x * map_y; i++){
-            map >> pos_x >> pos_y;
-            if(pos_x != 0 && pos_y !=5){
-                sf::Sprite sprite(spriteSheet, sf::IntRect(0+17*pos_x,0+17*pos_y,16,16)); //17 is a size of texture(16) + space between each texture 1 pixel
-                sprite.setPosition((i % map_x)*16, (i/map_x)*16); //  i % map_x is actual row, i/map_x is a actual column
+        for(int i = 0; i < mapSize.x * mapSize.y; i++){
+            map >> posSpriteSheet.x >> posSpriteSheet.y;
+            if(posSpriteSheet.x != 6 && posSpriteSheet.y !=6){
+                sf::Sprite sprite(spriteSheet, sf::IntRect(0+17*posSpriteSheet.x,0+17*posSpriteSheet.y,16,16)); //17 is a size of texture(16) + space between each texture 1 pixel
+                sprite.setPosition((i % mapSize.x)*16, (i/mapSize.x)*16); //  i % map_x is actual row, i/map_x is a actual column
                 wallLayer.emplace_back(sprite);
             }
         }
@@ -36,6 +38,11 @@ void MapLoader::loadLayers(std::string mapNumber){
 }
 
 void MapLoader::draw(sf::RenderWindow &window){
-    for(int i = 0; i < (int)groundLayer.size(); i++) window.draw(groundLayer[i]); //draw ground
-    for(int i = 0; i < (int)wallLayer.size(); i++) window.draw(wallLayer[i]); // draw walls
+    for(size_t i = 0; i < groundLayer.size(); i++) window.draw(groundLayer[i]); //draw ground
+    for(size_t i = 0; i < wallLayer.size(); i++) window.draw(wallLayer[i]); // draw walls
+}
+
+std::vector <sf::Sprite> MapLoader::showLayer(int number){
+    if(number == 0)return wallLayer;
+    else return groundLayer;
 }

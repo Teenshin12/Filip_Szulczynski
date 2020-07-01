@@ -2,15 +2,17 @@
 
 Animation::Animation(sf::Texture* texture, sf::Vector2u imageSize, float frameTime){
     // GET VARIABLES //
-    this->imageSize = imageSize;
-    this->frameTime = frameTime;
-    // SET VARIABLES //
-    time = 0.0f;
-    currentImage.x = 0;
-    currentImage.y = 0;
+    if(texture != 0){
+        this->imageSize = imageSize;
+        this->frameTime = frameTime;
+        // SET VARIABLES //
+        time = 0.0f;
+        currentImage.x = 0;
+        currentImage.y = 0;
 
-    uvRect.width = texture->getSize().x / float(imageSize.x);
-    uvRect.height = texture->getSize().y / float(imageSize.y);
+        uvRect.width = texture->getSize().x / float(imageSize.x);
+        uvRect.height = texture->getSize().y / float(imageSize.y);
+    }
 }
 
 
