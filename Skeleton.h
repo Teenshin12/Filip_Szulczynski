@@ -14,9 +14,12 @@ private:
     float deltaTime = 0;
     float speed = 10;
     float radius = 50;
+    bool direction = false;
+    bool saw = false;
+    sf::Clock sawClock;
     sf::Vector2f startPosition = {0,0};
 public:
-    Skeleton(float speed, sf::Vector2f startPosition);
+    Skeleton(float speed, sf::Vector2f startPosition, bool destination);
     virtual void updateDeltaTime(float deltaTime);
     virtual void move(sf::Vector2f direction);
     virtual sf::Vector2f returnPosition();

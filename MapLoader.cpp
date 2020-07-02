@@ -19,9 +19,11 @@ void MapLoader::loadLayers(std::string mapNumber){
         for(int i = 0; i < mapSize.x * mapSize.y; i++){
             map >> posSpriteSheet.x; //x position of texture
             map >> posSpriteSheet.y; //x position of texture
-            sf::Sprite sprite(spriteSheet, sf::IntRect(17*posSpriteSheet.x, 17*posSpriteSheet.y,16,16)); //17 is a size of texture(16) + space between each texture 1 pixel
-            sprite.setPosition((i % mapSize.x) * 16, (i/mapSize.x) * 16); //  i % map_x is actual row, i/map_x is a actual column
-            groundLayer.emplace_back(sprite);
+            if(posSpriteSheet.x != 6 && posSpriteSheet.y !=6){
+                sf::Sprite sprite(spriteSheet, sf::IntRect(17*posSpriteSheet.x, 17*posSpriteSheet.y,16,16)); //17 is a size of texture(16) + space between each texture 1 pixel
+                sprite.setPosition((i % mapSize.x) * 16, (i/mapSize.x) * 16); //  i % map_x is actual row, i/map_x is a actual column
+                groundLayer.emplace_back(sprite);
+            }
         }
 
         for(int i = 0; i < mapSize.x * mapSize.y; i++){

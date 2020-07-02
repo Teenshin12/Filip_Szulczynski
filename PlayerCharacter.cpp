@@ -9,6 +9,7 @@ PlayerCharacter::PlayerCharacter(){
     playerTexture.loadFromFile("player.png");
     playerSprite.setTexture(playerTexture);
     playerSprite.setPosition({16, 150});
+    playerSprite.setOrigin(5,9);
 
     playerAnimation = {&playerTexture, sf::Vector2u(4,6), 0.3f};
 }
@@ -33,8 +34,8 @@ void PlayerCharacter::move(sf::Vector2f direction){
         }
         playerSprite.move(direction.x, 0);
 
-        if(playerSprite.getPosition().x < -1 || playerSprite.getPosition().x > 1589) collisionX = true;
-        if(playerSprite.getPosition().y < -1 || playerSprite.getPosition().y > 19*16+3 ) collisionY = true;
+        if(playerSprite.getPosition().x < 4 || playerSprite.getPosition().x > 1594) collisionX = true;
+        if(playerSprite.getPosition().y < 8 || playerSprite.getPosition().y > 19*16+12 ) collisionY = true;
 
         if(collisionX == false){
             if(direction.x < 0) playerMovement = 2;

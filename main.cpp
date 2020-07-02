@@ -21,8 +21,8 @@ int main() {
     bool fullscreen = true; // czy pelny ekran?
     int characterSize = 100; //rozmiar tekstu
     int textPosition = 50; //poczatkowa pozycja tekstu
-    float playerSpeed = 6; //predkosc gracza
-    int numberOfSkeletons = 100;
+    float playerSpeed = 2; //predkosc gracza
+    int numberOfSkeletons = 12;
     MapLoader maploader;
     int levelCounter = 0;
     bool loaded = false;
@@ -60,7 +60,7 @@ int main() {
     sf::CircleShape nextLevel;
     nextLevel.setRadius(10);
     nextLevel.setOrigin(10,10);
-    nextLevel.setPosition(1550,150);
+    nextLevel.setPosition(1575,160);
     nextLevel.setFillColor(sf::Color::Cyan);
 
     //vector obiektow typu gameObject
@@ -71,12 +71,15 @@ int main() {
     //Tworzenie wskaznika na gracza
     PlayerCharacter *player = dynamic_cast<PlayerCharacter *>(GO[0].get());
 
+    bool direction = false;
+    float firstPos = 116;
     //Dodanie "numberOfSkeletons" szkieletow
     for(int i = 0; i < numberOfSkeletons; i++){
-        float rand1 =( std::rand() % 10 ) + 10;
-        float rand2 =( std::rand() % 1334 ) + 116;
-        float rand3 =( std::rand() % 304 ) + 16;
-        GO.emplace_back(std::make_unique<Skeleton>(rand1, sf::Vector2f(rand2,rand3)));
+        float rand1 =( std::rand() % 50 ) + 30;
+        float distance = 1500/numberOfSkeletons;
+        GO.emplace_back(std::make_unique<Skeleton>(rand1, sf::Vector2f(firstPos,160), direction));
+        firstPos += distance;
+        direction = not direction;
     }
     player->loadWalls(maploader.showLayer(0));
 
@@ -194,21 +197,21 @@ int main() {
             }
             cameraStepDelay = cameraStepDelayClock.getElapsedTime().asMilliseconds();
 
-            sf::Vector2f direction = {0, 0};
-                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::D)) direction = sf::Vector2f(deltaTime *  70 * playerSpeed, -deltaTime *  70 * playerSpeed);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction = sf::Vector2f(-deltaTime *  70 * playerSpeed, -deltaTime *  70 * playerSpeed);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S)) direction = sf::Vector2f(0.f, -deltaTime * 100 * playerSpeed);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::D)) direction = sf::Vector2f(deltaTime *  70 * playerSpeed, deltaTime *  70 * playerSpeed);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction = sf::Vector2f(-deltaTime *  70 * playerSpeed, deltaTime *  70 * playerSpeed);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !sf::Keyboard::isKeyPressed(sf::Keyboard::W)) direction = sf::Vector2f(0.f, deltaTime *  100 * playerSpeed);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !sf::Keyboard::isKeyPressed(sf::Keyboard::D)) direction = sf::Vector2f(-deltaTime * 100 * playerSpeed, 0.f);
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction = sf::Vector2f(deltaTime *  100 * playerSpeed, 0.f);
+            sf::Vector2f destination = {0, 0};
+                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::D)) destination = sf::Vector2f(deltaTime *  70 * playerSpeed, -deltaTime *  70 * playerSpeed);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::A)) destination = sf::Vector2f(-deltaTime *  70 * playerSpeed, -deltaTime *  70 * playerSpeed);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::W) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S)) destination = sf::Vector2f(0.f, -deltaTime * 100 * playerSpeed);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::D)) destination = sf::Vector2f(deltaTime *  70 * playerSpeed, deltaTime *  70 * playerSpeed);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) &&  sf::Keyboard::isKeyPressed(sf::Keyboard::A)) destination = sf::Vector2f(-deltaTime *  70 * playerSpeed, deltaTime *  70 * playerSpeed);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::S) && !sf::Keyboard::isKeyPressed(sf::Keyboard::W)) destination = sf::Vector2f(0.f, deltaTime *  100 * playerSpeed);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::A) && !sf::Keyboard::isKeyPressed(sf::Keyboard::D)) destination = sf::Vector2f(-deltaTime * 100 * playerSpeed, 0.f);
+            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::D) && !sf::Keyboard::isKeyPressed(sf::Keyboard::A)) destination = sf::Vector2f(deltaTime *  100 * playerSpeed, 0.f);
 
 
             //Sekcja ruchu w obiktach gry
             for(size_t i = 0; i < GO.size(); i++){
                 GameObjects *someGameObject = dynamic_cast<GameObjects *>(GO[i].get());
-                if(i == 0) someGameObject->move(direction);
+                if(i == 0) someGameObject->move(destination);
                 else someGameObject->move(player->returnPosition());
             }
 
@@ -251,6 +254,11 @@ int main() {
 
             window.setView(window.getDefaultView());
             window.draw(overlay);
+
+            for(size_t i = 0; i < GO.size(); i++){
+                GameObjects *someGameObject = dynamic_cast<GameObjects *>(GO[i].get());
+                if(someGameObject->returnPosition().x == -100) window.close();
+            }
         }
 
     window.display();
