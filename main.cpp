@@ -10,6 +10,30 @@
 #include "GameObjects.h"
 
 
+void setUpGame(std::vector<std::unique_ptr<GameObjects>> & GO, MapLoader & maploader, PlayerCharacter **player, int numberOfSkeletons){
+    srand( time( NULL ) );
+    GO.clear();
+    //Dodanie gracza na pierwsza pozycje vectora
+    GO.emplace_back(std::make_unique<PlayerCharacter>());
+
+    bool direction = false;
+    float firstPos = 116;
+    //Dodanie "numberOfSkeletons" szkieletow
+    for(int i = 0; i < numberOfSkeletons; i++){
+        float rand1 =( std::rand() % 50 ) + 30;
+        float distance = 1500/numberOfSkeletons;
+        GO.emplace_back(std::make_unique<Skeleton>(rand1, sf::Vector2f(firstPos,160), direction));
+        firstPos += distance;
+        direction = not direction;
+    }
+
+    //Ladowanie mapy
+    maploader.loadLayers("maps/1.txt"); //1600x320 rozmiar mapy w pikselach
+    PlayerCharacter *player2 = dynamic_cast<PlayerCharacter *>(GO[0].get());
+    player2->loadWalls(maploader.showLayer(0));
+    *player = player2;
+}
+
 int main() {
     srand( time( NULL ) );
     // variables to set
@@ -21,11 +45,13 @@ int main() {
     bool fullscreen = true; // czy pelny ekran?
     int characterSize = 100; //rozmiar tekstu
     int textPosition = 50; //poczatkowa pozycja tekstu
-    float playerSpeed = 2; //predkosc gracza
+    float playerSpeed = 3; //predkosc gracza
     int numberOfSkeletons = 12;
     MapLoader maploader;
-    int levelCounter = 0;
-    bool loaded = false;
+    int levelCounter = 1;
+    int scene = 0; //aktualna scena (menu, gra (odpowiednia cyfra))
+    bool loadMenu = true;
+    bool loadSettings = false;
 
     //Ustawienia rzutow
     sf::View view1(sf::Vector2f(0, 0), sf::Vector2f(resolution.x, resolution.y));
@@ -50,12 +76,6 @@ int main() {
     overlay.setTexture(overlayImage);
     overlay.setScale(resolution.x/overlayImage.getSize().x, resolution.y/overlayImage.getSize().y);
 
-    //Ladowanie mapy
-    if(loaded == false){
-        maploader.loadLayers("maps/1.txt"); //1600x320 rozmiar mapy w pikselach
-        levelCounter = 1;
-    }
-
     //Nastepny poziom
     sf::CircleShape nextLevel;
     nextLevel.setRadius(10);
@@ -66,22 +86,13 @@ int main() {
     //vector obiektow typu gameObject
     std::vector<std::unique_ptr<GameObjects>> GO;
 
-    //Dodanie gracza na pierwsza pozycje vectora
-    GO.emplace_back(std::make_unique<PlayerCharacter>());
-    //Tworzenie wskaznika na gracza
-    PlayerCharacter *player = dynamic_cast<PlayerCharacter *>(GO[0].get());
+    GUIManager *GUIM = new GUIManager(resolution, characterSize, textPosition, fullscreen);
 
-    bool direction = false;
-    float firstPos = 116;
-    //Dodanie "numberOfSkeletons" szkieletow
-    for(int i = 0; i < numberOfSkeletons; i++){
-        float rand1 =( std::rand() % 50 ) + 30;
-        float distance = 1500/numberOfSkeletons;
-        GO.emplace_back(std::make_unique<Skeleton>(rand1, sf::Vector2f(firstPos,160), direction));
-        firstPos += distance;
-        direction = not direction;
-    }
-    player->loadWalls(maploader.showLayer(0));
+    PlayerCharacter *player = nullptr;
+
+    setUpGame(GO, maploader, &player, numberOfSkeletons);
+
+    //Tworzenie wskaznika na gracza
 
 
     //tworzenie okna
@@ -89,15 +100,6 @@ int main() {
     if(fullscreen)window.create(sf::VideoMode(resolution.x, resolution.y), "THE GAME", sf::Style::Fullscreen);
     else window.create(sf::VideoMode(resolution.x, resolution.y), "THE GAME");
     window.setFramerateLimit(60);
-
-    //aktualna scena (menu, gra (odpowiednia cyfra))
-    int scene = 0;
-
-    //tworzenie GUIManager
-    GUIManager GUIM(resolution, characterSize, textPosition, fullscreen);
-    bool loadMenu = true;
-    bool loadSettings = false;
-
 
     // clocks
     sf::Clock deltaTimeClock;
@@ -107,8 +109,12 @@ int main() {
     float cameraStepDelay = 0.0f;
     cameraStepDelay = cameraStepDelayClock.restart().asMilliseconds();
 
+    sf::Clock TheEndClock;
+    bool TheEndSetted = false;
+
     while(window.isOpen())
     {
+        deltaTime = deltaTimeClock.restart().asSeconds(); // restart zegara deltaTime
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) window.close();
@@ -139,23 +145,24 @@ int main() {
 
         //scena 0
         if(scene == 0){
+            std::cout << "XD" << std::endl;
             window.clear();
 
             if(loadMenu == true){
-                GUIM.setMenu();
+                GUIM->setMenu();
                 loadMenu = false;
             }
             else if(loadSettings == true){
-                GUIM.setMenu();
+                GUIM->setMenu();
                 loadSettings = false;
             }
 
-            int check = GUIM.checkLMB(window);
+            int check = GUIM->checkLMB(window);
             if(check == 0){
-                scene = 1;
+                scene++;
             }
             else if (check == 1){
-                GUIM.setSettings();
+                GUIM->setSettings();
             }
             else if (check == 2){
                 window.close();
@@ -177,19 +184,18 @@ int main() {
                 else window.create(sf::VideoMode(resolution.x, resolution.y, 32), "THE GAME");
                 overlay.setScale(resolution.x/overlayImage.getSize().x, resolution.y/overlayImage.getSize().y);
                 background.setScale(resolution.x/backgroundTexture.getSize().x*1.01, resolution.y/backgroundTexture.getSize().y*1.01);
-                GUIM.setMenu();
+                GUIM->setMenu();
             }
             else if (check == 8){
-                GUIM.setMenu();
+                GUIM->setMenu();
             }
             window.draw(background);
-            GUIM.draw(window);
+            GUIM->draw(window);
         }
 
         //scena 1
         if(scene == 1){
             window.clear(); //czyszczenie okna
-            deltaTime = deltaTimeClock.restart().asSeconds(); // restart zegara deltaTime
             //Sekcja aktualizowania wartosci deltaTime w obiektach gry
             for(size_t i = 0; i < GO.size(); i++){
                 GameObjects *someGameObject = dynamic_cast<GameObjects *>(GO[i].get());
@@ -229,11 +235,14 @@ int main() {
             }
 
             //ladowanie nowych poziomow gdy gracz dojdzie do kranca mapy
-            if(player->returnSprite().getGlobalBounds().intersects(nextLevel.getGlobalBounds())) {levelCounter++; player->setPosition({16,150}); loaded = false; }
-            if(levelCounter == 2 && loaded == false){maploader.loadLayers("maps/2.txt"); player->loadWalls(maploader.showLayer(0)); player->loadWalls(maploader.showLayer(0)); loaded = true; }
-            else if(levelCounter == 3 && loaded == false){maploader.loadLayers("maps/3.txt"); player->loadWalls(maploader.showLayer(0)); player->loadWalls(maploader.showLayer(0)); loaded = true; }
-            else if(levelCounter == 4 && loaded == false){maploader.loadLayers("maps/3.txt"); player->loadWalls(maploader.showLayer(0)); player->loadWalls(maploader.showLayer(0)); loaded = true; }
-            else if(levelCounter == 5 && loaded == false){maploader.loadLayers("maps/3.txt"); player->loadWalls(maploader.showLayer(0)); player->loadWalls(maploader.showLayer(0)); loaded = true; }
+            if(player->returnSprite().getGlobalBounds().intersects(nextLevel.getGlobalBounds())) {
+                levelCounter++;
+                player->setPosition({16,150});
+                numberOfSkeletons++;
+                setUpGame(GO, maploader, &player, numberOfSkeletons);
+                maploader.loadLayers(std::string("maps/") + std::to_string(levelCounter) + std::string(".txt"));
+                if(maploader.returngood() == false) scene++;
+            }
 
             view1.setCenter(player->returnPosition().x + cameraOffset.x, 100);
             window.setView(view1);
@@ -257,7 +266,29 @@ int main() {
 
             for(size_t i = 0; i < GO.size(); i++){
                 GameObjects *someGameObject = dynamic_cast<GameObjects *>(GO[i].get());
-                if(someGameObject->returnPosition().x == -100) window.close();
+                if(someGameObject->returnPosition().x == -100) scene++;
+            }
+        }
+
+        //scena 2
+        if(scene == 2){
+            if(TheEndSetted == false){
+                TheEndSetted = true;
+                TheEndClock.restart();
+            }
+            if(TheEndClock.getElapsedTime().asSeconds() > 5) {
+                scene = 0;
+                TheEndSetted = false;
+                GUIM = new GUIManager(resolution, characterSize, textPosition, fullscreen);
+                setUpGame(GO, maploader, &player, numberOfSkeletons);
+                loadMenu = true;
+                loadSettings = false;
+                window.draw(background);
+            }
+            else{
+                GUIM->setTheEnd();
+                window.draw(background);
+                GUIM->draw(window);
             }
         }
 

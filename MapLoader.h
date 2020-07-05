@@ -11,10 +11,12 @@ private:
     std::vector <sf::Sprite> groundLayer; //ground sprites
     std::vector <sf::Sprite> wallLayer; //all collision block
     sf::Texture spriteSheet; //all textures to set
+    bool good = true;
 public:
     MapLoader();
     void loadLayers(std::string mapNumber);
     void draw(sf::RenderWindow &window);
+    bool returngood();
     std::vector <sf::Sprite> showLayer(int number);
 };
 

@@ -126,6 +126,21 @@ void GUIManager::setSettings(){
     scene = 1;
 }
 
+void GUIManager::setTheEnd(){
+
+    texts.clear();
+
+    sf::Text TheEnd;
+    TheEnd.setFont(font);
+    TheEnd.setCharacterSize(characterSize * 4);
+    TheEnd.setString("The End");
+    TheEnd.setFillColor(unTouched);
+    sf::FloatRect textRect = TheEnd.getLocalBounds();
+    TheEnd.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
+    TheEnd.setPosition(sf::Vector2f(resolution.x/2.0f, textPosition + characterSize * 4*(texts.size()+1)));
+    texts.emplace_back(TheEnd);
+}
+
 int GUIManager::checkLMB(sf::RenderWindow &window){
     sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
     sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos);

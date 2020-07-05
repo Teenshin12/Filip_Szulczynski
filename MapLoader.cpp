@@ -14,6 +14,7 @@ void MapLoader::loadLayers(std::string mapNumber){
     sf::Vector2i posSpriteSheet;
 
     if( map.good() == true ){
+        good = true;
         map >> mapSize.x; // taking x size of the map
         map >> mapSize.y; // taking y size of the map
         for(int i = 0; i < mapSize.x * mapSize.y; i++){
@@ -35,7 +36,7 @@ void MapLoader::loadLayers(std::string mapNumber){
             }
         }
     }
-    //else std::cout << "error loading map" << std::endl;
+    else good = false;
     map.close();
 }
 
@@ -47,4 +48,8 @@ void MapLoader::draw(sf::RenderWindow &window){
 std::vector <sf::Sprite> MapLoader::showLayer(int number){
     if(number == 0)return wallLayer;
     else return groundLayer;
+}
+
+bool MapLoader::returngood(){
+    return good;
 }

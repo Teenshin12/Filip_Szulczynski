@@ -23,9 +23,10 @@ bool fullscreen = false;
 sf::Color unTouched;
 sf::Color Touched;
 public:
-    GUIManager(sf::Vector2f resolution, int characterSize, int textPosition, bool fullscreen);
+GUIManager(sf::Vector2f resolution = {2560,1440}, int characterSize = 100, int textPosition = 50, bool fullscreen = true);
     void setMenu();
     void setSettings();
+    void setTheEnd();
     int checkLMB(sf::RenderWindow &window);
     void draw(sf::RenderWindow &window);
 };
