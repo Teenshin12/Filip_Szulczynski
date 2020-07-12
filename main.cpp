@@ -45,7 +45,7 @@ int main() {
     bool fullscreen = true; // czy pelny ekran?
     int characterSize = 100; //rozmiar tekstu
     int textPosition = 50; //poczatkowa pozycja tekstu
-    float playerSpeed = 3; //predkosc gracza
+    float playerSpeed = 2; //predkosc gracza
     int numberOfSkeletons = 12;
     MapLoader maploader;
     int levelCounter = 1;
