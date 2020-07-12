@@ -15,6 +15,4 @@ Na każdym poziomie zawarte będą pooruszające sie kreatury z pewnym polem wid
 
 # Mapa
 
-![filename](https://user-images.githubusercontent.com/65916772/87255068-c4d2cd80-c487-11ea-82ea-735eb480efee.png)
-
 ![filename2](https://user-images.githubusercontent.com/65916772/87255070-c7cdbe00-c487-11ea-8a3b-40e77fbc9523.png)
