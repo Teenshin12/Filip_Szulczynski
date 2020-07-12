@@ -7,11 +7,13 @@ sterowanie postacią będzie sie odbywać klawiszami a przemieszczanie bedzie re
 na akońcu każdego poziomu pośredniego będą drzwi, przejście przez nie zaprowadzi nas na następny poziom.
 Na każdym poziomie zawarte będą pooruszające sie kreatury z pewnym polem widzenia wkoło sebie, gdy będziziemy znajdować sie w tej strefie, potwór zaczine podążać w naszym kierunku a gdy nastąpi kolizja gra się zakończy
 
-### Menu
+# Menu
 
 ![filename1](https://user-images.githubusercontent.com/65916772/87255069-c603fa80-c487-11ea-8c05-35b6415f0850.png)
 
-## Mapa
+![filename3](https://user-images.githubusercontent.com/65916772/87255101-25faa100-c488-11ea-9a31-87d64f0d5329.png)
+
+# Mapa
 
 ![filename](https://user-images.githubusercontent.com/65916772/87255068-c4d2cd80-c487-11ea-82ea-735eb480efee.png)
 
