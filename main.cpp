@@ -10,7 +10,7 @@
 #include "GameObjects.h"
 
 
-void setUpGame(std::vector<std::unique_ptr<GameObjects>> & GO, MapLoader & maploader, PlayerCharacter **player, int numberOfSkeletons){
+void setUpGame(std::vector<std::unique_ptr<GameObjects>> & GO, MapLoader & maploader, PlayerCharacter **player, int numberOfSkeletons, int levelCounter){
     srand( time( NULL ) );
     GO.clear();
     //Dodanie gracza na pierwsza pozycje vectora
@@ -28,7 +28,8 @@ void setUpGame(std::vector<std::unique_ptr<GameObjects>> & GO, MapLoader & maplo
     }
 
     //Ladowanie mapy
-    maploader.loadLayers("maps/1.txt"); //1600x320 rozmiar mapy w pikselach
+    std::string nrMapy = std::string("maps/") + std::to_string(levelCounter) + std::string(".txt");
+    maploader.loadLayers(nrMapy); //1600x320 rozmiar mapy w pikselach
     PlayerCharacter *player2 = dynamic_cast<PlayerCharacter *>(GO[0].get());
     player2->loadWalls(maploader.showLayer(0));
     *player = player2;
@@ -45,7 +46,7 @@ int main() {
     bool fullscreen = true; // czy pelny ekran?
     int characterSize = 100; //rozmiar tekstu
     int textPosition = 50; //poczatkowa pozycja tekstu
-    float playerSpeed = 2; //predkosc gracza
+    float playerSpeed = 3; //predkosc gracza
     int numberOfSkeletons = 12;
     MapLoader maploader;
     int levelCounter = 1;
@@ -90,7 +91,7 @@ int main() {
 
     PlayerCharacter *player = nullptr;
 
-    setUpGame(GO, maploader, &player, numberOfSkeletons);
+    setUpGame(GO, maploader, &player, numberOfSkeletons, levelCounter);
 
     //Tworzenie wskaznika na gracza
 
@@ -239,8 +240,7 @@ int main() {
                 levelCounter++;
                 player->setPosition({16,150});
                 numberOfSkeletons++;
-                setUpGame(GO, maploader, &player, numberOfSkeletons);
-                maploader.loadLayers(std::string("maps/") + std::to_string(levelCounter) + std::string(".txt"));
+                setUpGame(GO, maploader, &player, numberOfSkeletons, levelCounter);
                 if(maploader.returngood() == false) scene++;
             }
 
@@ -280,7 +280,7 @@ int main() {
                 scene = 0;
                 TheEndSetted = false;
                 GUIM = new GUIManager(resolution, characterSize, textPosition, fullscreen);
-                setUpGame(GO, maploader, &player, numberOfSkeletons);
+                setUpGame(GO, maploader, &player, numberOfSkeletons, levelCounter);
                 loadMenu = true;
                 loadSettings = false;
                 window.draw(background);
