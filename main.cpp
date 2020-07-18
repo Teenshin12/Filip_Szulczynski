@@ -22,7 +22,7 @@ void setUpGame(std::vector<std::unique_ptr<GameObjects>> & GO, MapLoader & maplo
     for(int i = 0; i < numberOfSkeletons; i++){
         float rand1 =( std::rand() % 50 ) + 30;
         float distance = 1500/numberOfSkeletons;
-        GO.emplace_back(std::make_unique<Skeleton>(rand1, sf::Vector2f(firstPos,160), direction));
+        GO.emplace_back(std::make_unique<Skeleton>(rand1/2, sf::Vector2f(firstPos,160), direction));
         firstPos += distance;
         direction = not direction;
     }
