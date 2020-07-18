@@ -16,3 +16,9 @@ Na każdym poziomie zawarte będą pooruszające sie kreatury z pewnym polem wid
 # Mapa
 
 ![filename2](https://user-images.githubusercontent.com/65916772/87255070-c7cdbe00-c487-11ea-8a3b-40e77fbc9523.png)
+
+# Filmy
+
+nagrania zostały wrzucone na dysk google, ponieważ GitHub ogranicza rozmiar pliku.
+
+https://drive.google.com/drive/folders/1pni71ARpJX7klH4d-1lkTIn3sZ3DOuvE?usp=sharing
