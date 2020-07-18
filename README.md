@@ -7,6 +7,8 @@ sterowanie postacią będzie sie odbywać klawiszami a przemieszczanie bedzie re
 na akońcu każdego poziomu pośredniego będą drzwi, przejście przez nie zaprowadzi nas na następny poziom.
 Na każdym poziomie zawarte będą pooruszające sie kreatury z pewnym polem widzenia wkoło sebie, gdy będziziemy znajdować sie w tej strefie, potwór zaczine podążać w naszym kierunku a gdy nastąpi kolizja gra się zakończy
 
+Po wyświetleniu napisu The End, po krótkiej chwili gra przenosi samoczynnie spowrotem do menu startowego.
+
 # Menu
 
 ![filename1](https://user-images.githubusercontent.com/65916772/87255069-c603fa80-c487-11ea-8c05-35b6415f0850.png)
