@@ -136,7 +136,7 @@ int main() {
                     sf::Texture texture;
                     texture.create(window.getSize().x, window.getSize().y);
                     texture.update(window);
-                    if (texture.copyToImage().saveToFile("filename.png"))
+                    if (texture.copyToImage().saveToFile("screenshot.png"))
                     {
                         std::cout << "screenshot saved to " << "filename.png" << std::endl;
                     }
